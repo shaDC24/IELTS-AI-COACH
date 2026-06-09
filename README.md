@@ -1,6 +1,6 @@
 # IELTS AI Coach 
 
-An AI-powered IELTS preparation platform I built as my CSE-450 capstone project at BUET. The idea came from watching friends struggle with expensive coaching centers — I wanted to build something that gives real, personalized feedback without the cost.
+An AI-powered IELTS preparation platform I built for utilizing my free time . The idea came from watching friends struggle with expensive coaching centers — I wanted to build something that gives real, personalized feedback without the cost.
 
 Still a work in progress, but the core is coming together.
 

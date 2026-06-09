@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.env
+venv/
+*.egg-info/
+
+node_modules/
+dist/
+.env.local
+
+*.sqlite3
+faiss_index/
+*.log
