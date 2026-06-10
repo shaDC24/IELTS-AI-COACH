@@ -1,12 +1,14 @@
 import faiss
 import numpy as np
 import json
-from sentence_transformers import SentenceTransformer
 from groq import Groq
 from app.core.config import settings
 
 groq_client = Groq(api_key=settings.GROQ_API_KEY)
-embedder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+
+# Global variables — lazy load
+_embedder = None
+_index = None
 
 IELTS_KNOWLEDGE = [
     "To score band 7 in IELTS Writing Task 2, you need a clear position, well-developed arguments, varied vocabulary, and complex sentence structures with minimal errors.",
@@ -21,22 +23,32 @@ IELTS_KNOWLEDGE = [
     "Pronunciation in IELTS Speaking is about clarity and natural stress patterns, not accent. You will not be penalized for your accent.",
     "Common IELTS Writing mistakes: no clear thesis, weak topic sentences, insufficient examples, repetitive vocabulary, short word count.",
     "IELTS band 7 grammar requires error-free sentences most of the time, with a mix of simple and complex structures used flexibly.",
-    "For IELTS Reading True/False/Not Given questions, Not Given means the information is not in the passage at all, not that it is false.",
-    "IELTS Listening requires you to spell correctly. British spelling is preferred but American spelling is also accepted.",
+    "For IELTS Reading True/False/Not Given, Not Given means the information is not in the passage at all.",
+    "IELTS Listening requires correct spelling. British spelling is preferred but American spelling is also accepted.",
     "To get band 8 in IELTS Writing, your essay must show sophisticated vocabulary, flawless grammar, and a fully developed argument.",
 ]
 
-def build_index():
-    embeddings = embedder.encode(IELTS_KNOWLEDGE)
-    index = faiss.IndexFlatL2(embeddings.shape[1])
-    index.add(np.array(embeddings, dtype=np.float32))
-    return index
+def get_embedder():
+    global _embedder
+    if _embedder is None:
+        from sentence_transformers import SentenceTransformer
+        _embedder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    return _embedder
 
-_index = build_index()
+def get_index():
+    global _index
+    if _index is None:
+        embedder = get_embedder()
+        embeddings = embedder.encode(IELTS_KNOWLEDGE)
+        _index = faiss.IndexFlatL2(embeddings.shape[1])
+        _index.add(np.array(embeddings, dtype=np.float32))
+    return _index
 
 def retrieve_context(query: str, k: int = 3) -> str:
+    embedder = get_embedder()
+    index = get_index()
     query_vec = embedder.encode([query])
-    _, indices = _index.search(np.array(query_vec, dtype=np.float32), k)
+    _, indices = index.search(np.array(query_vec, dtype=np.float32), k)
     chunks = [IELTS_KNOWLEDGE[i] for i in indices[0] if i < len(IELTS_KNOWLEDGE)]
     return "\n".join(chunks)
 
