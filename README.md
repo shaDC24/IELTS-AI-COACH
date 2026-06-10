@@ -1,6 +1,6 @@
 # IELTS AI Coach
 
-**Live:** https://ielts-ai-coach.vercel.app
+**Live:** https://ielts-ai-coach-two.vercel.app
 
 I built this because a student has to pay a good amount of money a month for IELTS coaching and still not improving. The feedback was generic, the classes were crowded, and nobody was tracking what she was actually getting wrong. I figured an AI could do better — at least it never gets tired of correcting the same grammar mistake for the tenth time.
 
