@@ -1,13 +1,13 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
-import {
-  BookOpen, Mic, LayoutDashboard, FileText, LogOut
-} from 'lucide-react'
+import { BookOpen, Mic, LayoutDashboard, FileText, LogOut, TrendingUp, Brain } from 'lucide-react'
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/writing', icon: FileText, label: 'Writing' },
   { to: '/speaking', icon: Mic, label: 'Speaking' },
+  { to: '/study-plan', icon: Brain, label: 'Study Plan' },
+  { to: '/progress', icon: TrendingUp, label: 'Progress' },
 ]
 
 export default function Layout() {
