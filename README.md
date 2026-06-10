@@ -1,38 +1,36 @@
-# IELTS AI Coach 
+# IELTS AI Coach
 
-An AI-powered IELTS preparation platform I built for utilizing my free time . The idea came from watching friends struggle with expensive coaching centers — I wanted to build something that gives real, personalized feedback without the cost.
+**Live:** https://ielts-ai-coach.vercel.app
 
-Still a work in progress, but the core is coming together.
+I built this because a student has to pay a good amount of money a month for IELTS coaching and still not improving. The feedback was generic, the classes were crowded, and nobody was tracking what she was actually getting wrong. I figured an AI could do better — at least it never gets tired of correcting the same grammar mistake for the tenth time.
+
+Now the core coaching loop works.
 
 ---
 
-## What it does
+## What it actually does
 
-Most IELTS prep tools are just flashcard apps or grammar checkers. This one tries to be an actual coach:
-
-- **Writing Coach** — paste your essay, get band scores across all four criteria (Task Response, Coherence, Lexical Resource, Grammar), specific grammar corrections, vocabulary upgrade suggestions, and an improved version of your essay
-- **Speaking Coach** — record yourself answering an IELTS question, get it transcribed and evaluated on fluency, vocabulary, grammar, and pronunciation
-- **Mock Examiner** — simulates a real Part 1/2/3 interview with follow-up questions
-- **Study Plan Generator** — builds a week-by-week plan based on your target band, current level, and weak areas
-- **AI Mentor Chat** — RAG-based chatbot that answers questions using IELTS rules + your own performance history
-- **Progress Dashboard** — tracks band scores over time so you can see if you're actually improving
+- **Writing Coach** — paste your Task 1 or Task 2 essay, get band scores across all four IELTS criteria, specific line-by-line grammar corrections, vocabulary upgrade suggestions, and a fully rewritten improved version of your essay
+- **Speaking Coach** — record yourself answering an IELTS question, the audio gets transcribed via Whisper, and you get evaluated on fluency, grammar, vocabulary, and pronunciation with a model answer to compare against
+- **AI Mentor Chat** — ask anything about IELTS preparation, the coach answers based on your actual performance history and weak areas, not just generic advice
+- **Study Plan Generator** — tells you exactly what to study each day for 2 to 8 weeks based on your target band, current level, and which skills need the most work
+- **Progress Dashboard** — charts your band score history over time so you can actually see whether you're improving or just spinning your wheels
 
 ---
 
 ## Tech stack
 
-Went fully free-tier on everything:
+Everything here is free tier. No paid APIs except Groq, which has a generous free limit.
 
-| Layer | Tech |
+| Layer | What I used |
 |---|---|
 | Frontend | React + Vite + Tailwind CSS |
 | Backend | FastAPI (Python) |
 | LLM | Groq API — Llama 3.3 70B |
 | Speech-to-text | Groq Whisper large-v3 |
-| Vector search | FAISS |
 | Database | PostgreSQL via NeonDB |
-| Frontend deploy | Vercel |
-| Backend deploy | Render |
+| Frontend | Vercel |
+| Backend | Render |
 
 ---
 
@@ -42,18 +40,18 @@ Went fully free-tier on everything:
 ielts-ai-coach/
 ├── backend/
 │   ├── app/
-│   │   ├── api/          # Route handlers
-│   │   ├── core/         # Config, DB, security
+│   │   ├── api/          # Route handlers (auth, writing, speaking, study-plan, progress)
+│   │   ├── core/         # Config, database connection, JWT security
 │   │   ├── models/       # SQLAlchemy models
-│   │   └── services/     # Business logic + AI calls
+│   │   └── services/     # AI evaluation logic, Groq API calls
 │   ├── main.py
 │   └── requirements.txt
 └── frontend/
     └── src/
-        ├── components/
-        ├── pages/
-        ├── services/
-        └── store/
+        ├── components/   # Layout, shared UI
+        ├── pages/        # WritingCoach, SpeakingCoach, StudyPlan, Progress, Dashboard
+        ├── services/     # Axios API client
+        └── store/        # Zustand auth store
 ```
 
 ---
@@ -71,24 +69,24 @@ venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 ```
 
-Create a `.env` file in the `backend/` folder:
+Create a `.env` file inside `backend/`:
 
 ```env
 DB_USER=your_neon_user
 DB_PASSWORD=your_neon_password
 DB_HOST=your_neon_host
 DB_NAME=neondb
-SECRET_KEY=your_secret_key
-GROQ_API_KEY=your_groq_key
+SECRET_KEY=any_long_random_string
+GROQ_API_KEY=your_groq_api_key
 ```
 
-Then start the server:
+Get a free Groq API key at console.groq.com. Get a free NeonDB PostgreSQL connection at neon.tech.
 
 ```bash
 uvicorn main:app --reload --port 8000
 ```
 
-API docs will be at `http://localhost:8000/docs`
+Interactive API docs at `http://localhost:8000/docs` — useful for testing endpoints before hooking up the frontend.
 
 **Frontend**
 
@@ -109,29 +107,28 @@ npm run dev
 
 ---
 
-## Current status
+## What's done, what's not
 
-- [x] Auth system (JWT-based register/login)
-- [x] User profile with IELTS-specific fields (target band, exam date, weak skills)
-- [x] Database schema and migrations
-- [x] Writing evaluation endpoint
-- [x] Speaking evaluation with Whisper transcription
-- [ ] Frontend UI (in progress)
-- [ ] Mock interview flow
-- [ ] Study plan generator
-- [ ] Progress dashboard
-- [ ] Deployment
+- [x] JWT auth — register, login, token refresh
+- [x] User profile with target band, exam date, weak skills
+- [x] Writing evaluation — band scores, grammar corrections, vocabulary suggestions, improved essay
+- [x] Speaking evaluation — Whisper transcription + band scoring
+- [x] AI Mentor chat
+- [x] Personalized study plan generator
+- [x] Progress dashboard with band history charts
+- [x] Deployed — Vercel (frontend) + Render (backend) + NeonDB
+- [ ] Mock interview flow with multi-turn examiner conversation
+- [ ] Reading assistant — passage upload, MCQ generation, keyword highlighting
+- [ ] Listening practice module
 
 ---
 
 ## Why I built this
 
-IELTS coaching in Bangladesh is expensive and generic. A good teacher gives you personalized feedback — tells you exactly which grammar patterns you keep getting wrong, notices when your vocabulary is too basic, pushes you with follow-up questions when you give a short answer. I wanted to see how close an LLM-based system could get to that.
+Good IELTS feedback is expensive in Bangladesh and hard to get consistently. A teacher who gives you the same quality of attention in session 20 as in session 1, remembers every mistake you made last week, and is available at 2am — that does not exist at any price. This is my attempt to get close.
 
-The answer so far: pretty close for writing, surprisingly decent for speaking, still improving.
+Whether I've actually gotten close is a question I'll answer after a few more months of testing.
 
 ---
 
-## Self Idea Project
-
-*This is a student project. The band score predictions are AI-generated estimates and should not be treated as official IELTS scores.*
+*Band score predictions are AI-generated estimates. Not affiliated with the British Council, IDP, or Cambridge Assessment English.*
