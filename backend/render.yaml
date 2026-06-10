@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: ielts-ai-coach-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DB_USER
+        value: neondb_owner
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_HOST
+        value: ep-polished-rice-aq7y3ex4.c-8.us-east-1.aws.neon.tech
+      - key: DB_NAME
+        value: neondb
+      - key: SECRET_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
